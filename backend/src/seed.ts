@@ -193,7 +193,7 @@ async function seedDatabase() {
       {
         username: "super_admin",
         email: "mrpan@gmail.com",
-        password_hash: "$2a$10$NXnLmnYBfRvb.oWPPpWxMOTvq6WPw3u4Bf52fYUslrVBGU0JzxqzO",
+        password_hash: "$2a$12$dM7XVleYvmSd3RZOzhwVy.BKF53uSqAua.a/QfX7laBB8svx5bMjS",
         role: "super_admin",
         is_active: true,
         last_login: new Date("2026-04-19T15:00:48.412Z"),
