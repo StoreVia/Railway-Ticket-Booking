@@ -1,6 +1,6 @@
 {
-  "name": "Srmap API",
-  "short_name": "Srmapi",
+  "name": "Railx",
+  "short_name": "Railx",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
