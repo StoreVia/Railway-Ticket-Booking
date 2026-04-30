@@ -1,38 +1,62 @@
-# RailX Fullstack Application
+# RailX - Railway Ticket Booking System
 
-RailX is a fullstack railway booking system with:
-- a Next.js frontend in the repository root
-- an Express + TypeScript backend in `backend/`
-- MongoDB as the primary database
+RailX is a full-stack railway booking application with separate user and admin flows.
+Users can search trains, book seats, make payments, view notifications, and manage bookings.
+Admins can manage trains/schedules and monitor bookings from an admin dashboard.
 
-## Tech Stack
+## Stack
 
-- Frontend: Next.js, React, TypeScript, Tailwind CSS, Framer Motion
-- Backend: Express, TypeScript, Mongoose, JWT authentication
+- Frontend: React 19, Vite, React Router, Tailwind CSS, Framer Motion
+- Backend: Express, Mongoose, JWT, bcrypt
 - Database: MongoDB
+
+## Key Features
+
+- User authentication (register/login/logout/session validation)
+- Train search by source, destination, and date
+- Booking flow with seat selection and confirmation
+- Payment and cancellation flows
+- Notification center and user profile management
+- Admin authentication and protected admin dashboard
+- Admin CRUD for trains and schedules
+- Admin booking overview and cancellation actions
+- QR generation endpoint for booking confirmation
 
 ## Project Structure
 
-- `src/`: frontend application code (App Router pages and UI)
-- `backend/src/`: backend APIs, routes, models, and middleware
-- `scripts/`: helper scripts, including local development startup
-- `run.sh`: simple shell script to run frontend and backend together
+```text
+.
+├── src/                      # Frontend (React + Vite)
+│   ├── app/                  # Pages and route-level UI
+│   ├── components/           # Shared UI components/providers
+│   └── context/              # Auth and local-storage contexts
+├── backend/
+│   └── src/
+│       ├── models/           # Mongoose schemas
+│       ├── routes/           # Express route handlers
+│       ├── middleware/       # Auth middleware
+│       ├── lib/              # DB and JWT helpers
+│       ├── seed.js           # Seed script
+│       └── server.js         # Backend entrypoint
+├── run.sh                    # Start frontend and backend together
+└── README.md
+```
 
 ## Prerequisites
 
-- Node.js 18+ (recommended)
+- Node.js 18 or newer
 - npm
-- MongoDB running locally at `mongodb://localhost:27017` (default setup)
+- Local MongoDB instance running (default: `mongodb://localhost:27017`)
 
-## Installation
+## Setup
 
-Install frontend dependencies:
+1) Install frontend dependencies (repo root):
 
 ```bash
 npm install
 ```
 
-Install backend dependencies:
+2) Install backend dependencies:
 
 ```bash
 cd backend
@@ -40,9 +64,13 @@ npm install
 cd ..
 ```
 
-## Environment Setup
+3) Create backend environment file:
 
-Create `backend/.env` with values similar to:
+```bash
+cp backend/.env.example backend/.env
+```
+
+4) Update `backend/.env` as needed:
 
 ```env
 DB_HOST="mongodb://localhost:27017"
@@ -52,63 +80,76 @@ PORT=5001
 NODE_ENV="development"
 ```
 
-## Running the App
+## Run Locally
 
-Option 1: Run both services with the helper script:
+### Option A: Start both services with one command
 
 ```bash
-npm run dev:full
+./run.sh
 ```
 
-Option 2: Run services manually in separate terminals:
+### Option B: Start services in separate terminals
 
-Terminal 1 (frontend):
+Frontend (from repo root):
 
 ```bash
 npm run dev
 ```
 
-Terminal 2 (backend):
+Backend (from `backend/`):
 
 ```bash
-cd backend
 npm run dev
 ```
 
-## Build for Production
+## Default Local URLs
 
-Frontend:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:5001`
+- Health check: `http://localhost:5001/health`
 
-```bash
-npm run build
-npm start
-```
+## Database Seeding
 
-Backend:
+Seed stations, trains, schedules, and admin records:
 
 ```bash
 cd backend
-npm run build
-npm start
+npm run seed
 ```
 
-## Security Notes
+## Available Scripts
 
-- Do not commit real secrets or production credentials.
-- Move all secrets to environment variables and keep `.env` files out of version control.
-- Rotate any secret that has been exposed in source code history.
+### Root scripts
 
-## Scripts
+- `npm run dev` - start Vite development server (frontend)
+- `npm run build` - build frontend for production
+- `npm run start` - preview built frontend on port 3000
+- `npm run lint` - run ESLint
+- `npm run dev:full` - calls `node scripts/start-dev.js` (ensure this script exists before use)
 
-Root scripts:
-- `npm run dev`: start frontend development server
-- `npm run build`: build frontend
-- `npm run start`: start built frontend
-- `npm run lint`: lint frontend code
-- `npm run dev:full`: install deps, prepare backend env, and start both servers
+### Backend scripts (`backend/`)
 
-Backend scripts:
-- `npm run dev`: start backend with nodemon
-- `npm run build`: compile backend TypeScript
-- `npm run start`: run compiled backend
-- `npm run seed`: seed database
+- `npm run dev` - start backend with nodemon
+- `npm run start` - start backend with Node.js
+- `npm run build` - placeholder build script (no compile step)
+- `npm run seed` - seed MongoDB with sample data
+
+## API Route Groups
+
+- `/api/auth` - user authentication/session routes
+- `/api/admin-auth` - admin authentication routes
+- `/api/admin` - admin management and dashboard stats
+- `/api/stations` - station listing
+- `/api/trains` - train search
+- `/api/schedules` - schedule details
+- `/api/bookings` - booking creation/listing
+- `/api/payments` - payment operations
+- `/api/cancellations` - cancellation operations
+- `/api/notifications` - user notifications
+- `/api/profile` - user profile and password updates
+- `/api/qr` - QR generation
+
+## Notes
+
+- Frontend API URLs are currently hardcoded to `http://localhost:5001`.
+- Keep secrets out of version control (`.env` should stay local).
