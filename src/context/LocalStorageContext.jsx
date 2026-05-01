@@ -10,26 +10,12 @@ export const LocalStorageProvider = ({ children }) => {
   const profileStorage = useLocalStorage("profile");
   const [ready, setReady] = useState(false);
 
-  const cycleTheme = () => {
-    const themes = ["light", "dark"];
-    const current = settingsStorage.data.theme;
-    const currentIndex = themes.indexOf(current);
-    const nextTheme = themes[(currentIndex + 1) % themes.length];
-    settingsStorage.update({ theme: nextTheme });
-  };
 
   useEffect(() => {
     const timeout = setTimeout(() => setReady(true), 0);
     return () => clearTimeout(timeout);
   }, []);
 
-  useEffect(() => {
-    const { theme } = settingsStorage.data;
-    const classList = document.documentElement.classList;
-    const themeClasses = ["light", "dark"];
-    themeClasses.forEach((c) => classList.remove(c));
-    classList.add(theme);
-  }, [settingsStorage.data.theme]);
 
   const value = {
     settings: { ...DEFAULT_STORAGE.settings, ...settingsStorage.data },
@@ -42,7 +28,7 @@ export const LocalStorageProvider = ({ children }) => {
     updateProfile: profileStorage.update,
     removeProfile: profileStorage.remove,
     resetProfile: profileStorage.reset,
-    cycleTheme,
+
     ready,
   };
 

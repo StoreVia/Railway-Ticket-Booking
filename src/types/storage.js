@@ -1,6 +1,5 @@
 export const DEFAULT_STORAGE = {
   settings: {
-    theme: "dark",
     notifications: true,
     language: "en",
   },
