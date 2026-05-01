@@ -52,13 +52,6 @@ export default function AdminSchedulePage() {
     }
   }, [scheduleId]);
 
-  useEffect(() => {
-    fetchData();
-    if (scheduleId && scheduleId !== "new") {
-      fetchSchedule();
-    }
-  }, [scheduleId, fetchData, fetchSchedule]);
-
   const fetchData = useCallback(async () => {
     try {
       const profile = JSON.parse(
@@ -86,6 +79,13 @@ export default function AdminSchedulePage() {
       console.error("Failed to fetch data:", err);
     }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+    if (scheduleId && scheduleId !== "new") {
+      fetchSchedule();
+    }
+  }, [scheduleId, fetchData, fetchSchedule]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
