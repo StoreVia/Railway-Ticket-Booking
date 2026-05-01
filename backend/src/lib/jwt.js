@@ -1,7 +1,7 @@
 import jwt, { } from 'jsonwebtoken';
 import process from 'node:process';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'railx_secret_key_2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function signToken(payload) {
   const options = { expiresIn: `7d` };

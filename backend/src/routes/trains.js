@@ -11,7 +11,6 @@ router.get('/search', async (req, res) => {
     const toStationQuery = req.query.to ;
     const travelDate = req.query.date ;
 
-    
     let fromStation = null;
     let toStation = null;
 

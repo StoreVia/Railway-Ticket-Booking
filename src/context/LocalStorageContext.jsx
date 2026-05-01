@@ -10,12 +10,10 @@ export const LocalStorageProvider = ({ children }) => {
   const profileStorage = useLocalStorage("profile");
   const [ready, setReady] = useState(false);
 
-
   useEffect(() => {
     const timeout = setTimeout(() => setReady(true), 0);
     return () => clearTimeout(timeout);
   }, []);
-
 
   const value = {
     settings: { ...DEFAULT_STORAGE.settings, ...settingsStorage.data },
@@ -28,7 +26,6 @@ export const LocalStorageProvider = ({ children }) => {
     updateProfile: profileStorage.update,
     removeProfile: profileStorage.remove,
     resetProfile: profileStorage.reset,
-
     ready,
   };
 
