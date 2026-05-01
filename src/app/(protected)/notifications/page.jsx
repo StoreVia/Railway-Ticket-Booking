@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { motion } from "framer-motion";
 import { Bell, Check, Trash2 } from "lucide-react";
@@ -9,16 +9,17 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
-      const profile = JSON.parse(localStorage.getItem("railx_profile") || "{}");
-      const response = await fetch("http://localhost:5001/api/notifications", {
-        headers: { Authorization: `Bearer ${profile.token}` },
-      });
+      const profile = JSON.parse(
+        localStorage.getItem("railx_profile") || "{}",
+      );
+      const response = await fetch(
+        "http://localhost:5001/api/notifications",
+        {
+          headers: { Authorization: `Bearer ${profile.token}` },
+        },
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -29,7 +30,11 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const handleMarkAsRead = async (id) => {
     try {

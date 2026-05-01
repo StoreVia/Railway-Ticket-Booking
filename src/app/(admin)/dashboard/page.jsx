@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -17,7 +17,6 @@ import Link from "next/link";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [admin, setAdmin] = useState(null);
   const [stats, setStats] = useState(null);
   const [trains, setTrains] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -30,23 +29,11 @@ export default function AdminDashboard() {
   const [cancelReason, setCancelReason] = useState("");
   const [cancelError, setCancelError] = useState("");
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const adminProfile = JSON.parse(
+    localStorage.getItem("railx_admin_profile") || "{}",
+  );
 
-  const checkAuth = async () => {
-    const adminProfile = localStorage.getItem("railx_admin_profile");
-    if (!adminProfile) {
-      router.push("/admin/login");
-      return;
-    }
-
-    const profile = JSON.parse(adminProfile);
-    setAdmin(profile);
-    fetchData(profile.token);
-  };
-
-  const fetchData = async (token) => {
+  const fetchData = useCallback(async (token) => {
     try {
       const [statsRes, trainsRes, schedulesRes, bookingsRes] =
         await Promise.all([
@@ -73,7 +60,11 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData(adminProfile.token);
+  }, [fetchData, adminProfile.token]);
 
   const handleLogout = () => {
     localStorage.removeItem("railx_admin_profile");
@@ -225,7 +216,7 @@ export default function AdminDashboard() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-400">
-              {admin?.admin?.username}
+              {adminProfile?.admin?.username || adminProfile?.username}
             </span>
             <button
               onClick={handleLogout}

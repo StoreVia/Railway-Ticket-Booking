@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertCircle, Save, ChevronLeft } from "lucide-react";
@@ -25,14 +25,41 @@ export default function AdminSchedulePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const fetchSchedule = useCallback(async () => {
+    try {
+      const profile = JSON.parse(
+        localStorage.getItem("railx_admin_profile") || "{}",
+      );
+      const response = await fetch(
+        `http://localhost:5001/api/admin/schedules/${scheduleId}`,
+        {
+          headers: { Authorization: `Bearer ${profile.token}` },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData({
+          ...data,
+          train_id: data.train_id._id || data.train_id,
+          from_station: data.from_station._id || data.from_station,
+          to_station: data.to_station._id || data.to_station,
+          travel_date: data.travel_date.split("T")[0],
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch schedule:", err);
+    }
+  }, [scheduleId]);
+
   useEffect(() => {
     fetchData();
     if (scheduleId && scheduleId !== "new") {
       fetchSchedule();
     }
-  }, []);
+  }, [scheduleId, fetchData, fetchSchedule]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const profile = JSON.parse(
         localStorage.getItem("railx_admin_profile") || "{}",
@@ -58,34 +85,7 @@ export default function AdminSchedulePage() {
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
-  };
-
-  const fetchSchedule = async () => {
-    try {
-      const profile = JSON.parse(
-        localStorage.getItem("railx_admin_profile") || "{}",
-      );
-      const response = await fetch(
-        `http://localhost:5001/api/admin/schedules/${scheduleId}`,
-        {
-          headers: { Authorization: `Bearer ${profile.token}` },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setFormData({
-          ...data,
-          train_id: data.train_id._id || data.train_id,
-          from_station: data.from_station._id || data.from_station,
-          to_station: data.to_station._id || data.to_station,
-          travel_date: data.travel_date.split("T")[0],
-        });
-      }
-    } catch (err) {
-      console.error("Failed to fetch schedule:", err);
-    }
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

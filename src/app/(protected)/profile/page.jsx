@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Lock, Save, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -12,13 +12,11 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
-      const profile = JSON.parse(localStorage.getItem("railx_profile") || "{}");
+      const profile = JSON.parse(
+        localStorage.getItem("railx_profile") || "{}",
+      );
       const response = await fetch("http://localhost:5001/api/profile/me", {
         headers: { Authorization: `Bearer ${profile.token}` },
       });
@@ -32,7 +30,11 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleSaveProfile = async () => {
     setSaving(true);

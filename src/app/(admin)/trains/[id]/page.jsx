@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertCircle, Save, ChevronLeft } from "lucide-react";
@@ -21,13 +21,7 @@ export default function AdminTrainPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    if (trainId && trainId !== "new") {
-      fetchTrain();
-    }
-  }, []);
-
-  const fetchTrain = async () => {
+  const fetchTrain = useCallback(async () => {
     try {
       const profile = JSON.parse(
         localStorage.getItem("railx_admin_profile") || "{}",
@@ -46,7 +40,13 @@ export default function AdminTrainPage() {
     } catch (err) {
       console.error("Failed to fetch train:", err);
     }
-  };
+  }, [trainId]);
+
+  useEffect(() => {
+    if (trainId && trainId !== "new") {
+      fetchTrain();
+    }
+  }, [trainId, fetchTrain]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

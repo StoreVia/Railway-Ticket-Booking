@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Train, Clock, MapPin, ChevronDown } from "lucide-react";
@@ -23,35 +23,7 @@ export default function AvailableTrainsPage() {
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
 
-  useEffect(() => {
-    fetchStations();
-
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
-    const date = searchParams.get("date");
-
-    if (from) setFromStation(from);
-    if (to) setToStation(to);
-    if (date) setTravelDate(date);
-
-    if (from && to) {
-      fetchTrains(from, to, date);
-    }
-  }, [searchParams]);
-
-  const fetchStations = async () => {
-    try {
-      const response = await fetch("http://localhost:5001/api/stations");
-      if (response.ok) {
-        const data = await response.json();
-        setStations(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch stations", error);
-    }
-  };
-
-  const fetchTrains = async (from, to, date) => {
+  const fetchTrains = useCallback(async (from, to, date) => {
     if (!from || !to) return;
 
     setLoading(true);
@@ -76,7 +48,35 @@ export default function AvailableTrainsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const fetchStations = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/stations");
+      if (response.ok) {
+        const data = await response.json();
+        setStations(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch stations", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStations();
+
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    const date = searchParams.get("date");
+
+    if (from) setFromStation(from);
+    if (to) setToStation(to);
+    if (date) setTravelDate(date);
+
+    if (from && to) {
+      fetchTrains(from, to, date);
+    }
+  }, [searchParams, fetchTrains, fetchStations]);
 
   const handleFromStationSearch = (value) => {
     setFromStation(value);

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -20,16 +20,7 @@ export default function BookingPage() {
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!scheduleId) {
-      router.push("/search");
-      return;
-    }
-
-    fetchSchedule();
-  }, [router, scheduleId]);
-
-  const fetchSchedule = async () => {
+  const fetchSchedule = useCallback(async () => {
     try {
       const response = await fetch(
         `http://localhost:5001/api/schedules/${scheduleId}`,
@@ -45,7 +36,16 @@ export default function BookingPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [scheduleId, router]);
+
+  useEffect(() => {
+    if (!scheduleId) {
+      router.push("/search");
+      return;
+    }
+
+    fetchSchedule();
+  }, [router, scheduleId, fetchSchedule]);
 
   const addPassenger = () => {
     setPassengers([...passengers, { name: "", age: 0, gender: "Male" }]);

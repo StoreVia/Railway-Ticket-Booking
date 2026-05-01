@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Train,
@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const [bookings, setBookings] = useState([]);
@@ -23,15 +23,7 @@ export default function DashboardPage() {
   const [dashboardError, setDashboardError] = useState(null);
   const [expandedBookingPnr, setExpandedBookingPnr] = useState(null);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
-    } else {
-      fetchBookings();
-    }
-  }, [isAuthenticated, router]);
-
-  const getUpcomingCount = (items) => {
+  const getUpcomingCount = useCallback((items) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return items.filter((booking) => {
@@ -39,9 +31,9 @@ export default function DashboardPage() {
       t.setHours(0, 0, 0, 0);
       return t >= today;
     }).length;
-  };
+  }, []);
 
-  const sortBookings = (items) => {
+  const sortBookings = useCallback((items) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -66,9 +58,9 @@ export default function DashboardPage() {
         new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime()
       );
     });
-  };
+  }, []);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     setLoadingBookings(true);
     setDashboardError(null);
 
@@ -100,7 +92,11 @@ export default function DashboardPage() {
     }
 
     setLoadingBookings(false);
-  };
+  }, [sortBookings]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
 
   const handleLogout = async () => {
     await logout();

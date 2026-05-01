@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ChevronLeft, Check } from "lucide-react";
@@ -14,11 +14,7 @@ export default function SeatSelectionPage() {
   const [numPassengers, setNumPassengers] = useState(1);
   const [seatSections, setSeatSections] = useState([]);
 
-  useEffect(() => {
-    generateSeats();
-  }, []);
-
-  const generateSeats = () => {
+  const generateSeats = useCallback(() => {
     const classes = ["General", "Sleeper", "AC2", "AC1"];
     const berths = ["Lower", "Middle", "Upper"];
     const sections = [];
@@ -50,7 +46,11 @@ export default function SeatSelectionPage() {
     });
 
     setSeatSections(sections);
-  };
+  }, []);
+
+  useEffect(() => {
+    generateSeats();
+  }, [generateSeats]);
 
   const toggleSeat = (seat) => {
     if (!seat.available && !selectedSeats.includes(seat)) return;

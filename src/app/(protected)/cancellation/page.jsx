@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle, Trash2, ChevronLeft } from "lucide-react";
@@ -17,13 +17,11 @@ export default function CancellationPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    fetchBooking();
-  }, []);
-
-  const fetchBooking = async () => {
+  const fetchBooking = useCallback(async () => {
     try {
-      const profile = JSON.parse(localStorage.getItem("railx_profile") || "{}");
+      const profile = JSON.parse(
+        localStorage.getItem("railx_profile") || "{}",
+      );
       const response = await fetch(
         `http://localhost:5001/api/bookings/my-bookings`,
         {
@@ -41,7 +39,11 @@ export default function CancellationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookingId]);
+
+  useEffect(() => {
+    fetchBooking();
+  }, [fetchBooking]);
 
   const handleCancel = async (e) => {
     e.preventDefault();
