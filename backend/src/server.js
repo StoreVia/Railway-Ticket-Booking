@@ -58,7 +58,6 @@ async function startServer() {
   try {
     await connectDB();
     
-    
     app.use('/api/auth', authRoutes);
     app.use('/api/admin-auth', adminAuthRoutes);
     app.use('/api/admin', adminRoutes);
